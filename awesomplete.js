@@ -157,8 +157,9 @@ _.prototype = {
 						var text = el.textContent.trim();
 						var value = el.value || text;
 						var label = el.label || text;
+            var title = el.title || text;
 						if (value !== "") {
-							items.push({ label: label, value: value });
+							items.push({ label: label, value: value, title: title });
 						}
 					}
 				});
@@ -375,8 +376,10 @@ _.CONTAINER = function (input) {
 
 _.ITEM = function (text, input, item_id) {
 	var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
+  html += "<span class='wiki-title'>" + text.title + "</span>"
 	return $.create("li", {
 		innerHTML: html,
+    "title": text.title,
 		"role": "option",
 		"aria-selected": "false",
 		"id": "awesomplete_list_" + this.count + "_item_" + item_id
@@ -394,8 +397,8 @@ _.DATA = function (item/*, input*/) { return item; };
 function Suggestion(data) {
 	var o = Array.isArray(data)
 	  ? { label: data[0], value: data[1] }
-	  : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
+	  : typeof data === "object" && "label" in data && "value" in data && "title" in data ? data : { label: data, value: data, title: data };
+  this.title = o.title;
 	this.label = o.label || o.value;
 	this.value = o.value;
 }
