@@ -70,7 +70,7 @@ var _ = function (input, o) {
 	this._events = {
 		input: {
 			"input": this.evaluate.bind(this),
-			"blur": this.close.bind(this, { reason: "blur" }),
+			/*"blur": this.close.bind(this, { reason: "blur" }),*/
 			"keydown": function(evt) {
 				var c = evt.keyCode;
 
@@ -96,7 +96,7 @@ var _ = function (input, o) {
 			}
 		},
 		form: {
-			"submit": this.close.bind(this, { reason: "submit" })
+			/*"submit": this.close.bind(this, { reason: "submit" })*/
 		},
 		ul: {
 			// Prevent the default mousedowm, which ensures the input is not blurred.
@@ -291,7 +291,7 @@ _.prototype = {
 
 			if (allowed) {
 				this.replace(suggestion);
-				this.close({ reason: "select" });
+				/*this.close({ reason: "select" });*/
 				$.fire(this.input, "awesomplete-selectcomplete", {
 					text: suggestion,
 					originalEvent: originalEvent
@@ -375,8 +375,8 @@ _.CONTAINER = function (input) {
 }
 
 _.ITEM = function (text, input, item_id) {
-	var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
-  html += "<span class='wiki-title'>" + text.title + "</span>"
+  var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
+  html += "<span class='wiki-title'>" + text.title + "<a class='wiki-preview-popup' wikiId='" + text.value[0] + "'>+</a></span>";
 	return $.create("li", {
 		innerHTML: html,
     "title": text.title,
@@ -470,7 +470,17 @@ $.create = function(tag, o) {
 			element.setAttribute(i, val);
 		}
 	}
-
+  if (element.querySelector("a.wiki-preview-popup") != null) {
+    let value = (element.querySelector("a.wiki-preview-popup")).getAttribute('wikiid')
+    element.querySelector("a.wiki-preview-popup").addEventListener('click',
+      function (e) {
+        document.dispatchEvent(
+          new CustomEvent("openWikiModalAwesomplete", {
+            "detail": {"searchWikiPageId": value}
+            })
+        )
+      })
+  }
 	return element;
 };
 
@@ -478,7 +488,6 @@ $.bind = function(element, o) {
 	if (element) {
 		for (var event in o) {
 			var callback = o[event];
-
 			event.split(/\s+/).forEach(function (event) {
 				element.addEventListener(event, callback);
 			});
