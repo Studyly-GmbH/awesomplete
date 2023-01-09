@@ -376,7 +376,7 @@ _.CONTAINER = function (input) {
 
 _.ITEM = function (text, input, item_id) {
   var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
-  html += "<span class='wiki-title'>" + text.title + "<a class='wiki-preview-popup' wikiId='" + text.value[0] + "'>+</a></span>";
+  html += "<span class='wiki-title'>" + text.title + "<a class='wiki-preview-popup' wikiid='" + text.value[0] + "'>+</a></span>";
 	return $.create("li", {
 		innerHTML: html,
     "title": text.title,
