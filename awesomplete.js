@@ -70,7 +70,7 @@ var _ = function (input, o) {
 	this._events = {
 		input: {
 			"input": this.evaluate.bind(this),
-			"blur": this.close.bind(this, { reason: "blur" }),
+			/*"blur": this.close.bind(this, { reason: "blur" }),*/
 			"keydown": function(evt) {
 				var c = evt.keyCode;
 
@@ -96,7 +96,7 @@ var _ = function (input, o) {
 			}
 		},
 		form: {
-			"submit": this.close.bind(this, { reason: "submit" })
+			/*"submit": this.close.bind(this, { reason: "submit" })*/
 		},
 		ul: {
 			// Prevent the default mousedowm, which ensures the input is not blurred.
@@ -157,8 +157,9 @@ _.prototype = {
 						var text = el.textContent.trim();
 						var value = el.value || text;
 						var label = el.label || text;
+            var title = el.title || [text];
 						if (value !== "") {
-							items.push({ label: label, value: value });
+							items.push({ label: label, value: value, title: title });
 						}
 					}
 				});
@@ -290,7 +291,7 @@ _.prototype = {
 
 			if (allowed) {
 				this.replace(suggestion);
-				this.close({ reason: "select" });
+				/*this.close({ reason: "select" });*/
 				$.fire(this.input, "awesomplete-selectcomplete", {
 					text: suggestion,
 					originalEvent: originalEvent
@@ -374,9 +375,11 @@ _.CONTAINER = function (input) {
 }
 
 _.ITEM = function (text, input, item_id) {
-	var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
+  var html = input.trim() === "" ? text : text.replace(RegExp($.regExpEscape(input.trim()), "gi"), "<mark>$&</mark>");
+  html += "<span class='wiki-title'>" + getTitlesString(text.title, true) + "<a class='wiki-preview-popup' wikiid='" + text.value[0] + "'>+</a></span>";
 	return $.create("li", {
 		innerHTML: html,
+    "title": getTitlesString(text.title, false),
 		"role": "option",
 		"aria-selected": "false",
 		"id": "awesomplete_list_" + this.count + "_item_" + item_id
@@ -394,8 +397,8 @@ _.DATA = function (item/*, input*/) { return item; };
 function Suggestion(data) {
 	var o = Array.isArray(data)
 	  ? { label: data[0], value: data[1] }
-	  : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
+	  : typeof data === "object" && "label" in data && "value" in data && "title" in data ? data : { label: data, value: data, title: data };
+  this.title = o.title;
 	this.label = o.label || o.value;
 	this.value = o.value;
 }
@@ -467,7 +470,17 @@ $.create = function(tag, o) {
 			element.setAttribute(i, val);
 		}
 	}
-
+  if (element.querySelector("a.wiki-preview-popup") != null) {
+    let value = (element.querySelector("a.wiki-preview-popup")).getAttribute('wikiid')
+    element.querySelector("a.wiki-preview-popup").addEventListener('click',
+      function (e) {
+        document.dispatchEvent(
+          new CustomEvent("openWikiModalAwesomplete", {
+            "detail": {"searchWikiPageId": value}
+            })
+        )
+      })
+  }
 	return element;
 };
 
@@ -475,7 +488,6 @@ $.bind = function(element, o) {
 	if (element) {
 		for (var event in o) {
 			var callback = o[event];
-
 			event.split(/\s+/).forEach(function (event) {
 				element.addEventListener(event, callback);
 			});
@@ -551,5 +563,56 @@ if (typeof module === "object" && module.exports) {
 }
 
 return _;
+
+  function getTitlesString(titles, shorten) {
+    if (!titles) {
+      return "";
+    }
+    titles.sort((a, b) => {
+      if (a.regionInformation !== undefined) {
+        if (b.regionInformation !== undefined) {
+          const countryA = a.regionInformation.country.countryCode.toUpperCase();
+          const countryB = b.regionInformation.country.countryCode.toUpperCase();
+          return getAlphabeticalOrderingCriterionForSorting(countryA, countryB);
+        }
+        return 1;
+      } else if (b.regionInformation !== undefined) {
+        return -1;
+      } else {
+        const titleA = a.title.toUpperCase();
+        const titleB = b.title.toUpperCase();
+        return getAlphabeticalOrderingCriterionForSorting(titleA, titleB);
+      }
+    })
+    let resultString = "";
+
+    for (let i = 0; i < titles.length; ++i) {
+      if (titles[i].regionInformation !== undefined) {
+        resultString += titles[i].regionInformation.country.countryCode
+        resultString += ": "
+      }
+      let title = titles[i].title
+      if (shorten && title.length > 18) {
+        title = title.substring(0, 15) + '...'
+      }
+
+      resultString += title
+      if (i !== titles.length -1) {
+        resultString += "; "
+      }
+    }
+    return resultString
+  }
+
+  function getAlphabeticalOrderingCriterionForSorting(a, b) {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    // names must be equal
+    return 0;
+  }
 
 }());
