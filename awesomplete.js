@@ -115,7 +115,12 @@ var _ = function (input, o) {
 						li = li.parentNode;
 					}
 
+          li.parentElement.childNodes.forEach(x => {
+            x.classList.remove('selected')
+          })
+
 					if (li && evt.button === 0) {  // Only select on left click
+            li.classList.add('selected')
 						evt.preventDefault();
 						me.select(li, evt.target, evt);
 					}
