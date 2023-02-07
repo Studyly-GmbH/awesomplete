@@ -335,12 +335,9 @@ _.prototype = {
           let a = me.item(text, value, index)
 					me.ul.appendChild(a);
 
-          console.log(keywordId, text.value)
-          console.log(keywordId === text.value[1])
           //if the element has the same keywordId as the current selected keyword in internallink, select it
           if (keywordId === text.value[1]) {
             a.classList.add('selected')
-            console.log('add selected', a)
           }
 				});
 
