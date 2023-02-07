@@ -115,12 +115,7 @@ var _ = function (input, o) {
 						li = li.parentNode;
 					}
 
-          li.parentElement.childNodes.forEach(x => {
-            x.classList.remove('selected')
-          })
-
 					if (li && evt.button === 0) {  // Only select on left click
-            li.classList.add('selected')
 						evt.preventDefault();
 						me.select(li, evt.target, evt);
 					}
@@ -286,6 +281,12 @@ _.prototype = {
 		}
 
 		if (selected) {
+
+      //when li is selected, deselect the previously selected li (if it was selected) and then select the newly selected li
+      selected.parentElement.childNodes.forEach(x => {
+        x.classList.remove('selected')
+      })
+      selected.classList.add('selected')
 			var suggestion = this.suggestions[this.index];
 
 			var allowed = $.fire(this.input, "awesomplete-select", {
@@ -310,6 +311,8 @@ _.prototype = {
 		var value = this.input.value;
 
 		if (value.length >= this.minChars && this._list && this._list.length > 0) {
+      //convert to number
+      let keywordId = +this.test
 			this.index = -1;
 			// Populate list with options that match
 			this.ul.innerHTML = "";
@@ -329,7 +332,16 @@ _.prototype = {
 			this.suggestions = this.suggestions.slice(0, this.maxItems);
 
 			this.suggestions.forEach(function(text, index) {
-					me.ul.appendChild(me.item(text, value, index));
+          let a = me.item(text, value, index)
+					me.ul.appendChild(a);
+
+          console.log(keywordId, text.value)
+          console.log(keywordId === text.value[1])
+          //if the element has the same keywordId as the current selected keyword in internallink, select it
+          if (keywordId === text.value[1]) {
+            a.classList.add('selected')
+            console.log('add selected', a)
+          }
 				});
 
 			if (this.ul.children.length === 0) {
