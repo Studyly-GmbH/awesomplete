@@ -312,7 +312,7 @@ _.prototype = {
 
 		if (value.length >= this.minChars && this._list && this._list.length > 0) {
       //convert to number
-      let keywordId = +this.test
+      let keywordId = +this.liToSelect
 			this.index = -1;
 			// Populate list with options that match
 			this.ul.innerHTML = "";
