@@ -14,19 +14,19 @@
   },
   "homepage": "https://leaverou.github.io/awesomplete/",
   "devDependencies": {
-    "gulp": "5.0.1",
-    "gulp-concat": "2.6.1",
-    "gulp-header": "2.0.12",
-    "gulp-rename": "2.1.0",
-    "gulp-sourcemaps": "3.0.0",
-    "gulp-uglify": "3.0.2",
-    "jasmine-core": "6.3.0",
-    "karma": "6.4.4",
-    "karma-chrome-launcher": "3.2.0",
-    "karma-coverage": "2.2.1",
-    "karma-fixture": "0.2.6",
-    "karma-html2js-preprocessor": "1.1.0",
-    "karma-jasmine": "5.1.0",
-    "karma-jasmine-def": "0.1.0"
+    "gulp": "^5.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-header": "^2.0.12",
+    "gulp-rename": "^2.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-uglify": "^3.0.2",
+    "jasmine-core": "^6.3.0",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-fixture": "^0.2.6",
+    "karma-html2js-preprocessor": "^1.1.0",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-def": "^0.1.0"
   }
 }
